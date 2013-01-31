@@ -15,6 +15,11 @@ canvas {
   display: none;
 }
 
+#header {
+  display: inline-block;
+  margin-right: 10px;
+}
+
 #form-profile {
   display: inline-block;
   margin-right: 30px;
