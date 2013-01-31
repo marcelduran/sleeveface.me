@@ -1,4 +1,4 @@
-(function(doc, win) {
+(function(doc, win, nav) {
   var arr = Array().slice,
       video = doc.querySelector('video'),
       canvasHeader = doc.querySelector('#canvas-header'),
@@ -93,8 +93,18 @@
   timer.addEventListener('click', timed, false);
   doc.querySelector('#form-profile').addEventListener('submit', getUser, false);
 
-  navigator.webkitGetUserMedia({video: true}, function(stream) {
-    video.src = win.URL.createObjectURL(stream);
+  nav.getMedia = (nav.getUserMedia ||
+                  nav.webkitGetUserMedia ||
+                  nav.mozGetUserMedia ||
+                  nav.msGetUserMedia);
+
+  nav.getMedia({video: true}, function(stream) {
+    video.src = (win.URL && win.URL.createObjectURL &&
+      win.URL.createObjectURL(stream)) || stream;
     setTimeout(snapshot, 1000);
-  }, function() {});
-}(document, window));
+  }, function(err) {
+    console.log(err);
+  });
+
+  handle.focus();
+}(document, window, navigator));
