@@ -1,3 +1,7 @@
+html {
+  background-color: #a8d0e3;
+}
+
 body {
   font-family: "Helvetica Neue", Arial, sans-serif;
   color: #333;
@@ -11,7 +15,7 @@ canvas {
   display: none;
 }
 
-form {
+#form-profile {
   display: inline-block;
   margin-right: 30px;
 }
@@ -20,6 +24,29 @@ form {
   position: absolute;
   top: 0;
   right: 0;
+}
+
+#handle {
+  background-color: #c0deed;
+  border: 1px solid #888;
+  height: 22px;
+  font-size: 18px;
+  line-height: 1;
+  vertical-align: top;
+}
+
+#form-profile span {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+#form-profile input[type="submit"]{
+  background-color: #8ec1da;
+  border: 1px solid #888;
+  height: 26px;
+  font-weight: bold;
+  font-size: 14px;
+  line-height: 1;
 }
 
 #timer, #shutter {
