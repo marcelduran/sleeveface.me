@@ -81,5 +81,17 @@
     <canvas id="canvas-header" width="520" height="260"></canvas>
     <canvas id="canvas-photo" width="73" height="73"></canvas>
     <script src="profilematcher.js"></script>
+    <script>
+      (function (d, s) {
+        var g = d.createElement(s),
+            h = d.getElementsByTagName(s)[0];
+        g.async = true;
+        g.src = '//www.google-analytics.com/ga.js';
+        _gaq = [['_setAccount', 'UA-3587044-1'], ['_trackPageview'], ['_trackPageLoadTime']];
+        setTimeout(function () {
+          h.parentNode.insertBefore(g, h);
+        }, 0);
+      }(document, 'script'));
+    </script>
   </body>
 </html>
