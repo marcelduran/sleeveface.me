@@ -1,6 +1,9 @@
 (function(doc, win, nav) {
-  var arrayer = Array().slice,
-      video = doc.querySelector('video'),
+  var profilePhoto, profileHeader, videoStream, width, height, square, half,
+      arrayer = Array().slice,
+      videoHeader = doc.querySelector('#video-header'),
+      videoPhoto = doc.querySelector('#video-photo'),
+      video = videoHeader,
       canvasHeader = doc.querySelector('#canvas-header'),
       canvasPhoto = doc.querySelector('#canvas-photo'),
       preview = doc.querySelector('#preview img'),
@@ -8,6 +11,9 @@
       photo = doc.querySelector('#photo img'),
       timer = doc.querySelector('#timer'),
       handle = doc.querySelector('#handle'),
+      picture = doc.querySelector('#live .picture'),
+      previewPic = doc.querySelector('#preview .picture'),
+      info = doc.querySelector('#live .info'),
       fullname = arrayer.call(doc.querySelectorAll('.fullname')),
       username = arrayer.call(doc.querySelectorAll('.username')),
       bio = arrayer.call(doc.querySelectorAll('.bio')),
@@ -16,16 +22,43 @@
       linkHeader = doc.querySelector('#header a'),
       linkPhoto = doc.querySelector('#photo a'),
       ctxHeader = canvasHeader.getContext('2d');
-      ctxPhoto = canvasPhoto.getContext('2d');
+      ctxPhoto = canvasPhoto.getContext('2d'),
+      gif = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'
+      mode = 'both';
 
-  function snapshot() {
-    ctxHeader.drawImage(video, 0, 0, 520, 260, 0, 0, 520, 260);
+  function shotHeader() {
+    ctxHeader.drawImage(video,
+      0, 0, width, parseInt(width / 2, 10), 0, 0, 520, 260);
     preview.src = header.src = canvasHeader.toDataURL('image/jpeg');
     linkHeader.href = header.src.replace('image/jpeg', 'image/octet-stream');
+  }
 
-    ctxPhoto.drawImage(video, 224, 24, 73, 73, 0, 0, 73, 73);
+  function shotPhoto(sx, sy, sw, sh, dx, dy, dw, dh) {
+    ctxPhoto.drawImage(video, sx, sy, sw, sh, dx, dy, dw, dh);
     photo.src = canvasPhoto.toDataURL('image/jpeg');
     linkPhoto.href = photo.src.replace('image/jpeg', 'image/octet-stream');
+  }
+
+  function snapshot() {
+    previewPic.style.backgroundImage = 'none';
+    switch(mode) {
+      case 'both':
+        shotHeader();
+        shotPhoto(parseInt(width / 2 - square / 2, 10),
+          parseInt(width * 24 / 520, 10), square, square, 0, 0, 73, 73);
+        break;
+      case 'photo':
+        shotPhoto(parseInt((width - height) / 2, 10),
+          0, height, height, 0, 0, 73, 73);
+        previewPic.style.backgroundImage = 'url(' + photo.src + ')';
+        preview.src = header.src = linkHeader.href = profileHeader || gif;
+        break;
+      case 'header':
+        shotHeader();
+        photo.src = linkPhoto.href = profilePhoto || gif;
+        previewPic.style.backgroundImage = 'url(' + photo.src + ')';
+        break;
+    }
   }
 
   function timed() {
@@ -81,6 +114,19 @@
         locUrl += data.url.replace(/^https?:\/\//, '');
       }
       set(loc, locUrl);
+
+      profilePhoto = data.profile_image_url.replace('_normal.', '_bigger.');
+      profileHeader = data.profile_banner_url;
+      if (profileHeader) {
+        profileHeader += '/web';
+      }
+
+      mode = 'both'
+      picture.style.backgroundImage = 'none';
+      info.style.backgroundImage = 'none';
+      videoHeader.style.display = 'block';
+      videoPhoto.style.display = 'none';
+      setStream(videoHeader);
     }
 
     scripts.forEach(function eachScript(script) {
@@ -88,10 +134,57 @@
     });
   };
 
-  doc.querySelector('#live').addEventListener('click', snapshot, false);
+  function toggleMode() {
+    switch (mode) {
+      case 'both':
+        mode = 'photo';
+        if (profileHeader) {
+          info.style.backgroundImage = 'url(' + profileHeader + ')';
+        }
+        picture.style.backgroundImage = 'none';
+        videoHeader.style.display = 'none';
+        videoPhoto.style.display = 'block';
+        setStream(videoPhoto);
+        break;
+      case 'photo':
+        mode = 'header';
+        if (profilePhoto) {
+          picture.style.backgroundImage = 'url(' + profilePhoto + ')';
+        }
+        info.style.backgroundImage = 'none';
+        videoHeader.style.display = 'block';
+        videoPhoto.style.display = 'none';
+        setStream(videoHeader);
+        break;
+      case 'header':
+        mode = 'both';
+        picture.style.backgroundImage = 'none';
+        break;
+    }
+  }
+
+  function setStream(vid) {
+    video = vid;
+    video.src = (win.URL && win.URL.createObjectURL &&
+      win.URL.createObjectURL(videoStream)) || videoStream;
+  }
+
+  function getDimensions() {
+    width = this.videoWidth;
+    height = this.videoHeight;
+    square = parseInt(width * 73 / 520, 10);
+    half = parseInt(width / 2, 10);
+    videoPhoto.style.marginLeft =
+      '-' + parseInt((73 * ((width - height) / 2) / height), 10) + 'px';
+    snapshot();
+    video.removeEventListener('loadedmetadata', getDimensions, false);
+  }
+
   doc.querySelector('#shutter').addEventListener('click', snapshot, false);
   timer.addEventListener('click', timed, false);
   doc.querySelector('#form-profile').addEventListener('submit', getUser, false);
+  doc.querySelector('#live').addEventListener('click', toggleMode, false);
+  video.addEventListener('loadedmetadata', getDimensions, false);
 
   nav.getMedia = (nav.getUserMedia ||
                   nav.webkitGetUserMedia ||
@@ -99,9 +192,8 @@
                   nav.msGetUserMedia);
 
   nav.getMedia({video: true}, function(stream) {
-    video.src = (win.URL && win.URL.createObjectURL &&
-      win.URL.createObjectURL(stream)) || stream;
-    setTimeout(snapshot, 1000);
+    videoStream = stream;
+    setStream(video);
   }, function(err) {
     console.log(err);
   });
