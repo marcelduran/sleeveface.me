@@ -1,5 +1,5 @@
 (function(doc, win, nav) {
-  var arr = Array().slice,
+  var arrayer = Array().slice,
       video = doc.querySelector('video'),
       canvasHeader = doc.querySelector('#canvas-header'),
       canvasPhoto = doc.querySelector('#canvas-photo'),
@@ -8,10 +8,10 @@
       photo = doc.querySelector('#photo img'),
       timer = doc.querySelector('#timer'),
       handle = doc.querySelector('#handle'),
-      fullname = arr.call(doc.querySelectorAll('.fullname')),
-      username = arr.call(doc.querySelectorAll('.username')),
-      bio = arr.call(doc.querySelectorAll('.bio')),
-      loc = arr.call(doc.querySelectorAll('.location')),
+      fullname = arrayer.call(doc.querySelectorAll('.fullname')),
+      username = arrayer.call(doc.querySelectorAll('.username')),
+      bio = arrayer.call(doc.querySelectorAll('.bio')),
+      loc = arrayer.call(doc.querySelectorAll('.location')),
       place = doc.querySelector('script'),
       linkHeader = doc.querySelector('#header a'),
       linkPhoto = doc.querySelector('#photo a'),
@@ -53,7 +53,7 @@
 
     e.preventDefault();
 
-    script.id = 'api';
+    script.className = 'api';
     script.src = 'https://api.twitter.com/1/users/show.json?' +       
       'callback=cb&screen_name=' + screenName;
     place.parentNode.insertBefore(script, place);
@@ -67,7 +67,7 @@
 
   win.cb = function(data) {
     var locUrl,
-        script = doc.querySelector('#api');
+        scripts = arrayer.call(doc.querySelectorAll('.api'));
 
     if (data) {
       set(fullname, data.name);
@@ -83,9 +83,9 @@
       set(loc, locUrl);
     }
 
-    if (script) {
+    scripts.forEach(function eachScript(script) {
       script.parentNode.removeChild(script);
-    }
+    });
   };
 
   doc.querySelector('#live').addEventListener('click', snapshot, false);
