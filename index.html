@@ -1,0 +1,85 @@
+<!doctype html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Twitter Profile Header + Photo Matcher</title>
+    <link rel="stylesheet" type="text/css" href="profilematcher.css">
+    <!-- icons by Marc Whitbread - http://www.25icons.com -->
+  </head>
+  <body>
+
+    <div id="container">
+
+      <h1>Twitter Profile Header + Photo Matcher</h1>
+
+      <div>
+
+        <div class="module">
+          <h2>Live</h2>
+          <div class="controls">
+            <form id="form-profile">
+              @<input id="handle" placeholder="Twitter Handle" maxlength="15">
+              <input type="submit" value="Get Profile">
+            </form>
+            <button id="timer" title="timer">&nbsp;</button>
+            <button id="shutter" title="shutter">&nbsp;</button>
+          </div>
+          <div id="live" class="profile">
+            <video autoplay></video>
+            <div class="info">
+              <div class="overlay"></div>
+              <div class="picture"></div>
+              <div class="details">
+                <h1 class="fullname">Marcel Duran</h1>
+                <h2 class="username">@marcelduran</h2>
+                <p class="bio">Front End Engineer @Twitter; @YSlow project leader (http://yslow.org); (Snow|Skate)boarder; BJJ purple-belt</p>
+                <p class="location">Mountain View, CA · marcelduran.com</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="module">
+          <h2>Preview</h2>
+          <div id="preview" class="profile">
+            <img width="520" height="260">
+            <div class="info">
+              <div class="overlay"></div>
+              <div class="picture"></div>
+              <div class="details">
+                <h1 class="fullname">Marcel Duran</h1>
+                <h2 class="username">@marcelduran</h2>
+                <p class="bio">Front End Engineer @Twitter; @YSlow project leader (http://yslow.org); (Snow|Skate)boarder; BJJ purple-belt</p>
+                <p class="location">Mountain View, CA · marcelduran.com</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div>
+
+        <div id="header" class="module">
+          <h2>Header</h2>
+          <img width="520" height="260">
+          <p>Right-click → "Save Image As..." or <a target="_blank">download</a></p>
+        </div>
+
+        <div id="photo" class="module">
+          <h2>Photo</h2>
+          <img width="73" height="73">
+          <p>Right-click → "Save Image As..." or <a target="_blank">download</a></p>
+        </div>
+
+      </div>
+
+      <div id="footer">Copyright 2013 - <a href="http://twitter.com/marcelduran">Marcel Duran</a></div>
+
+    </div>
+
+    <canvas id="canvas-header" width="520" height="260"></canvas>
+    <canvas id="canvas-photo" width="73" height="73"></canvas>
+    <script src="profilematcher.js"></script>
+  </body>
+</html>

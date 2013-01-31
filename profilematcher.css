@@ -1,0 +1,146 @@
+body {
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  color: #333;
+}
+
+h1, h2, p {
+  margin: 5px 0;
+}
+
+canvas {
+  display: none;
+}
+
+form {
+  display: inline-block;
+  margin-right: 30px;
+}
+
+.controls {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+#timer, #shutter {
+  border: none;
+  width: 32px;
+  height: 32px;
+  margin-right: 10px;
+  font-weight: bold;
+  font-size: 20px;
+  line-height: 1.5;
+  color: red;
+  cursor: pointer;
+}
+
+#timer {
+  background: url(timer.png);
+}
+
+#shutter {
+  background: url(shutter.png);
+}
+
+#container {
+  margin: 0 auto;
+  width: 1045px;
+}
+
+#live {
+  cursor: pointer;
+}
+
+.profile {
+  position: relative;
+  width: 520px;
+  height: 260px;
+  overflow: hidden;
+  display: inline-block;
+  vertical-align: top;
+}
+
+.info {
+  position: absolute;  
+  width: 520px;
+  height: 260px;
+  top: 0;
+  left: 0;
+}
+
+.info .overlay {
+  position: absolute;
+  width: 520px;
+  height: 200px;
+  bottom: 0;
+  background: -webkit-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.55) 100%);
+}
+
+.info .picture {
+  position: relative;
+  margin: 20px auto 6px;
+  display: block;
+  width: 73px;
+  height: 73px;
+  border: 4px solid #fff;
+  background-color: transparent;
+  border-radius: 5px;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, .25);
+}
+
+.info .details {
+  text-align: center;
+  line-height: 16px;
+  font-size: 14px;
+  width: 86%;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, .5);
+  margin: auto;
+  float: none;
+  position: relative;
+  color: #fff;
+}
+
+.details .fullname {
+  font-size: 24px;
+  font-weight: bold;
+  line-height: 1;
+  margin: 0 0 2px 0;
+  text-rendering: optimizeLegibility;
+}
+
+.details .username {
+  margin: 0 0 1px 0;
+  font-size: 18px;
+  font-weight: normal;
+  line-height: 24px;
+}
+
+.details .bio {
+  font: inherit;
+  font-size: 14px;
+  line-height: 18px;
+  margin: 0 0 4px 0;
+  word-wrap: break-word;
+}
+
+.details .location {
+  line-height: 18px;
+  margin: 0;
+}
+
+.module {
+  display: inline-block;
+  vertical-align: top;
+  position: relative;
+  font-size: 13px;
+}
+
+#photo img {
+  margin-bottom: 187px;
+}
+
+#footer {
+  text-align: center;
+  font-size: 11px;
+  margin-top: 10px;
+}
