@@ -21,9 +21,9 @@
       place = doc.querySelector('script'),
       linkHeader = doc.querySelector('#header a'),
       linkPhoto = doc.querySelector('#photo a'),
-      ctxHeader = canvasHeader.getContext('2d');
+      ctxHeader = canvasHeader.getContext('2d'),
       ctxPhoto = canvasPhoto.getContext('2d'),
-      gif = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'
+      gif = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7',
       mode = 'both';
 
   function shotHeader() {
@@ -40,6 +40,11 @@
   }
 
   function snapshot() {
+    // FF don't honor loadedmetadata
+    if (!width || !height) {
+      getDimensions.call(video);
+    }
+
     previewPic.style.backgroundImage = 'none';
     switch(mode) {
       case 'both':
@@ -126,7 +131,7 @@
       info.style.backgroundImage = 'none';
       videoHeader.style.display = 'block';
       videoPhoto.style.display = 'none';
-      setStream(videoHeader);
+      setStream(videoStream, videoHeader);
     }
 
     scripts.forEach(function eachScript(script) {
@@ -144,7 +149,7 @@
         picture.style.backgroundImage = 'none';
         videoHeader.style.display = 'none';
         videoPhoto.style.display = 'block';
-        setStream(videoPhoto);
+        setStream(videoStream, videoPhoto);
         break;
       case 'photo':
         mode = 'header';
@@ -154,7 +159,7 @@
         info.style.backgroundImage = 'none';
         videoHeader.style.display = 'block';
         videoPhoto.style.display = 'none';
-        setStream(videoHeader);
+        setStream(videoStream, videoHeader);
         break;
       case 'header':
         mode = 'both';
@@ -163,10 +168,22 @@
     }
   }
 
-  function setStream(vid) {
-    video = vid;
-    video.src = (win.URL && win.URL.createObjectURL &&
-      win.URL.createObjectURL(videoStream)) || videoStream;
+  function setStream(stream, vid) {
+    videoStream = stream || videoStream;
+    video = vid || video;
+    if (win.webkitURL) {
+      video.src = win.webkitURL.createObjectURL(videoStream);
+    } else if (typeof video.mozSrcObject !== 'undefined') {
+      video.mozSrcObject = videoStream;
+      video.play();
+    } else if (nav.mozGetUserMedia) {
+      video.src = videoStream;
+      video.play();
+    } else if (win.URL) {
+      video.src = win.URL.createObjectURL(videoStream);
+    } else {
+      video.src = videoStream;
+    }
   }
 
   function getDimensions() {
@@ -176,7 +193,6 @@
     half = parseInt(width / 2, 10);
     videoPhoto.style.marginLeft =
       '-' + parseInt((73 * ((width - height) / 2) / height), 10) + 'px';
-    snapshot();
     video.removeEventListener('loadedmetadata', getDimensions, false);
   }
 
@@ -191,10 +207,7 @@
                   nav.mozGetUserMedia ||
                   nav.msGetUserMedia);
 
-  nav.getMedia({video: true}, function(stream) {
-    videoStream = stream;
-    setStream(video);
-  }, function(err) {
+  nav.getMedia({video: true}, setStream, function(err) {
     console.log(err);
   });
 

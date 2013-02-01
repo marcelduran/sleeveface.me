@@ -35,6 +35,7 @@ canvas {
   background-color: #c0deed;
   border: 1px solid #888;
   height: 22px;
+  width: 190px;
   font-size: 18px;
   line-height: 1;
   vertical-align: top;
@@ -81,6 +82,9 @@ canvas {
 
 #live {
   cursor: pointer;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .profile {
@@ -90,6 +94,11 @@ canvas {
   overflow: hidden;
   display: inline-block;
   vertical-align: top;
+  background-image: url(https://twimg0-a.akamaihd.net/a/1359591489/t1/img/grey_header_web.png);
+}
+
+#header img, #photo img {
+  background-color: #ddd;
 }
 
 .info {
@@ -105,7 +114,11 @@ canvas {
   width: 520px;
   height: 200px;
   bottom: 0;
+  background: -moz-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.55) 100%);
+  background: -webkit-gradient(linear,left top,left bottom,color-stop(0%,rgba(0,0,0,0)),color-stop(100%,rgba(0,0,0,0.55)));
   background: -webkit-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.55) 100%);
+  background: -o-linear-gradient(top,rgba(0,0,0,0) 0,rgba(0,0,0,0.55) 100%);
+  background: linear-gradient(to bottom,rgba(0,0,0,0) 0,rgba(0,0,0,0.55) 100%);
 }
 
 .info .picture {
