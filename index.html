@@ -27,11 +27,11 @@
             <button id="shutter" title="shutter">&nbsp;</button>
           </div>
           <div id="live" class="profile">
-            <video id="video-header" autoplay></video>
+            <canvas id="feedback-header"></canvas>
             <div class="info">
               <div class="overlay"></div>
               <div class="picture">
-                <video id="video-photo" autoplay></video>
+                <canvas id="feedback-photo"></canvas>
               </div>
               <div class="details">
                 <h1 class="fullname">Your Name</h1>
@@ -82,8 +82,7 @@
       <div id="footer">Copyright 2013 · <a href="http://twitter.com/marcelduran">Marcel Duran</a> · Disclaimer: TwiSleeveFace is not affiliated with, endorsed by, or in any way connected to Twitter, Inc.</div>
     </div>
 
-    <canvas id="canvas-header" width="520" height="260"></canvas>
-    <canvas id="canvas-photo" width="73" height="73"></canvas>
+    <video id="camera" autoplay class="hidden"></video>
     <script src="twisleeveface.js"></script>
     <script>
       (function (d, s) {

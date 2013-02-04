@@ -11,7 +11,7 @@ h1, h2, p {
   margin: 5px 0;
 }
 
-canvas {
+.hidden {
   display: none;
 }
 
@@ -189,12 +189,4 @@ canvas {
   text-align: center;
   font-size: 11px;
   margin-top: 10px;
-}
-
-#video-header {
-  width: 520px;
-}
-
-#video-photo {
-  height: 73px;
 }

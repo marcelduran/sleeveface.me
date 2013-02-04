@@ -1,11 +1,11 @@
+// based on: www.phpied.com/canvas-pixels-3-getusermedia/
 (function(doc, win, nav) {
-  var profilePhoto, profileHeader, videoStream, width, height, square, half,
+  var profilePhoto, profileHeader, videoStream,
+      width, height, square, half, mode,
       arrayer = Array().slice,
-      videoHeader = doc.querySelector('#video-header'),
-      videoPhoto = doc.querySelector('#video-photo'),
-      video = videoHeader,
-      canvasHeader = doc.querySelector('#canvas-header'),
-      canvasPhoto = doc.querySelector('#canvas-photo'),
+      camera = doc.querySelector('#camera'),
+      feedbackHeader = doc.querySelector('#feedback-header'),
+      feedbackPhoto = doc.querySelector('#feedback-photo'),
       preview = doc.querySelector('#preview img'),
       header = doc.querySelector('#header img'),
       photo = doc.querySelector('#photo img'),
@@ -13,6 +13,7 @@
       handle = doc.querySelector('#handle'),
       picture = doc.querySelector('#live .picture'),
       previewPic = doc.querySelector('#preview .picture'),
+      container = doc.querySelector('#container'),
       info = doc.querySelector('#live .info'),
       fullname = arrayer.call(doc.querySelectorAll('.fullname')),
       username = arrayer.call(doc.querySelectorAll('.username')),
@@ -21,40 +22,44 @@
       place = doc.querySelector('script'),
       linkHeader = doc.querySelector('#header a'),
       linkPhoto = doc.querySelector('#photo a'),
-      ctxHeader = canvasHeader.getContext('2d'),
-      ctxPhoto = canvasPhoto.getContext('2d'),
-      gif = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7',
-      mode = 'both';
+      ctxFeedbackHeader = feedbackHeader.getContext('2d'),
+      ctxFeedbackPhoto = feedbackPhoto.getContext('2d'),
+      gif = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///' +
+        'yH5BAEAAAAALAAAAAABAAEAAAIBRAA7',
+      feedback = feedbackHeader,
+      ctx = ctxFeedbackHeader;
 
   function shotHeader() {
-    ctxHeader.drawImage(video,
-      0, 0, width, parseInt(width / 2, 10), 0, 0, 520, 260);
-    preview.src = header.src = canvasHeader.toDataURL('image/jpeg');
+    preview.src = header.src = feedbackHeader.toDataURL('image/jpeg');
     linkHeader.href = header.src.replace('image/jpeg', 'image/octet-stream');
   }
 
-  function shotPhoto(sx, sy, sw, sh, dx, dy, dw, dh) {
-    ctxPhoto.drawImage(video, sx, sy, sw, sh, dx, dy, dw, dh);
-    photo.src = canvasPhoto.toDataURL('image/jpeg');
+  function shotPhoto() {
+    photo.src = feedbackPhoto.toDataURL('image/jpeg');
     linkPhoto.href = photo.src.replace('image/jpeg', 'image/octet-stream');
   }
 
   function snapshot() {
-    // FF don't honor loadedmetadata
+    var img;
+
+    // FF doesn't honor loadedmetadata
     if (!width || !height) {
-      getDimensions.call(video);
+      getDimensions.call(camera);
     }
 
     previewPic.style.backgroundImage = 'none';
     switch(mode) {
       case 'both':
         shotHeader();
-        shotPhoto(parseInt(width / 2 - square / 2, 10),
-          parseInt(width * 24 / 520, 10), square, square, 0, 0, 73, 73);
+        img = new Image();
+        img.onload = function() {
+          ctxFeedbackPhoto.drawImage(img, 224, 24, 73, 73, 0, 0, 73, 73);
+          shotPhoto();
+        };
+        img.src = preview.src;
         break;
       case 'photo':
-        shotPhoto(parseInt((width - height) / 2, 10),
-          0, height, height, 0, 0, 73, 73);
+        shotPhoto();
         previewPic.style.backgroundImage = 'url(' + photo.src + ')';
         preview.src = header.src = linkHeader.href = profileHeader || gif;
         break;
@@ -126,12 +131,7 @@
         profileHeader += '/web';
       }
 
-      mode = 'both'
-      picture.style.backgroundImage = 'none';
-      info.style.backgroundImage = 'none';
-      videoHeader.style.display = 'block';
-      videoPhoto.style.display = 'none';
-      setStream(videoStream, videoHeader);
+      setMode('both');
     }
 
     scripts.forEach(function eachScript(script) {
@@ -139,51 +139,115 @@
     });
   };
 
-  function toggleMode() {
+  function setMode(m) {
+    mode = m;
     switch (mode) {
       case 'both':
-        mode = 'photo';
+        picture.style.backgroundImage = 'none';
+        info.style.backgroundImage = 'none';
+        feedbackPhoto.style.display = 'none';
+        feedback = feedbackHeader;
+        ctx = ctxFeedbackHeader;
+        break;
+      case 'photo':
         if (profileHeader) {
           info.style.backgroundImage = 'url(' + profileHeader + ')';
         }
         picture.style.backgroundImage = 'none';
-        videoHeader.style.display = 'none';
-        videoPhoto.style.display = 'block';
-        setStream(videoStream, videoPhoto);
+        feedbackHeader.style.display = 'none';
+        feedbackPhoto.style.display = 'block';
+        feedback = feedbackPhoto;
+        ctx = ctxFeedbackPhoto;
         break;
-      case 'photo':
-        mode = 'header';
+      case 'header':
         if (profilePhoto) {
           picture.style.backgroundImage = 'url(' + profilePhoto + ')';
         }
         info.style.backgroundImage = 'none';
-        videoHeader.style.display = 'block';
-        videoPhoto.style.display = 'none';
-        setStream(videoStream, videoHeader);
-        break;
-      case 'header':
-        mode = 'both';
-        picture.style.backgroundImage = 'none';
+        feedbackHeader.style.display = 'block';
+        feedbackPhoto.style.display = 'none';
+        feedback = feedbackHeader;
+        ctx = ctxFeedbackHeader;
         break;
     }
   }
 
-  function setStream(stream, vid) {
-    videoStream = stream || videoStream;
-    video = vid || video;
-    if (win.webkitURL) {
-      video.src = win.webkitURL.createObjectURL(videoStream);
-    } else if (typeof video.mozSrcObject !== 'undefined') {
-      video.mozSrcObject = videoStream;
-      video.play();
-    } else if (nav.mozGetUserMedia) {
-      video.src = videoStream;
-      video.play();
-    } else if (win.URL) {
-      video.src = win.URL.createObjectURL(videoStream);
+  function toggleMode() {
+    var next = {
+      both: 'photo',
+      photo: 'header',
+      header: 'both'
+    };
+    setMode(next[mode]);
+  }
+
+  function paintOnCanvas() {
+    var data, pixel, x, y, ctxHeight, ctxWidth,
+        ctxHalfWidth, widthX4, widthBound,
+        swp = [];
+
+    if (mode === 'photo') {
+      ctx.drawImage(camera,
+        parseInt((width - height) / 2, 10), 0, height, height, 0, 0, 73, 73);
     } else {
-      video.src = videoStream;
+      ctx.drawImage(camera,
+        0, 0, width, parseInt(width / 2, 10), 0, 0, 520, 260);
     }
+
+    // mirror
+    data = ctx.getImageData(0, 0, feedback.width, feedback.height);
+    pixel = data.data;
+
+    ctxHeight = feedback.height,
+    ctxWidth = feedback.width,
+    ctxHalfWidth = parseInt(ctxWidth / 2, 10),
+    widthX4 = ctxWidth * 4,
+    widthBound = ctxWidth - 1;
+
+    for (y = 0; y < ctxHeight; y += 1) {
+      for (x = 0; x < ctxHalfWidth; x += 1) {
+        swp[0] = pixel[(y * widthX4) + (x * 4)    ];
+        swp[1] = pixel[(y * widthX4) + (x * 4) + 1];
+        swp[2] = pixel[(y * widthX4) + (x * 4) + 2];
+        swp[3] = pixel[(y * widthX4) + (x * 4) + 3];
+
+        pixel[(y * widthX4) + (x * 4)    ] =
+          pixel[(y * widthX4) + ((widthBound - x) * 4)    ];
+        pixel[(y * widthX4) + (x * 4) + 1] =
+          pixel[(y * widthX4) + ((widthBound - x) * 4) + 1];
+        pixel[(y * widthX4) + (x * 4) + 2] =
+          pixel[(y * widthX4) + ((widthBound - x) * 4) + 2];
+        pixel[(y * widthX4) + (x * 4) + 3] =
+          pixel[(y * widthX4) + ((widthBound - x) * 4) + 3];
+
+        pixel[(y * widthX4) + ((widthBound - x) * 4)    ] = swp[0];
+        pixel[(y * widthX4) + ((widthBound - x) * 4) + 1] = swp[1];
+        pixel[(y * widthX4) + ((widthBound - x) * 4) + 2] = swp[2];
+        pixel[(y * widthX4) + ((widthBound - x) * 4) + 3] = swp[3];
+      }
+    }
+
+    ctx.putImageData(data, 0, 0);
+
+    win.requestAnimFrame(paintOnCanvas);
+  }
+
+  function setStream(stream) {
+    videoStream = stream;
+    if (win.webkitURL) {
+      camera.src = win.webkitURL.createObjectURL(videoStream);
+    } else if (typeof camera.mozSrcObject !== 'undefined') {
+      camera.mozSrcObject = videoStream;
+      camera.play();
+    } else if (nav.mozGetUserMedia) {
+      camera.src = videoStream;
+      camera.play();
+    } else if (win.URL) {
+      camera.src = win.URL.createObjectURL(videoStream);
+    } else {
+      camera.src = videoStream;
+    }
+    win.requestAnimFrame(paintOnCanvas);
   }
 
   function getDimensions() {
@@ -191,17 +255,39 @@
     height = this.videoHeight;
     square = parseInt(width * 73 / 520, 10);
     half = parseInt(width / 2, 10);
-    videoPhoto.style.marginLeft =
-      '-' + parseInt((73 * ((width - height) / 2) / height), 10) + 'px';
-    video.removeEventListener('loadedmetadata', getDimensions, false);
+
+    // FF doesn't honor loadedmetadata
+    if (!width || !height) {
+      setTimeout(getDimensions.bind(camera), 50);
+    }
   }
 
+  // listeners
   doc.querySelector('#shutter').addEventListener('click', snapshot, false);
   timer.addEventListener('click', timed, false);
   doc.querySelector('#form-profile').addEventListener('submit', getUser, false);
   doc.querySelector('#live').addEventListener('click', toggleMode, false);
-  video.addEventListener('loadedmetadata', getDimensions, false);
+  camera.addEventListener('loadedmetadata', getDimensions, false);
 
+  // initialize canvas
+  feedbackHeader.width = 520;
+  feedbackHeader.height = 260;
+  feedbackPhoto.width = 73;
+  feedbackPhoto.height = 73;
+  setMode('both');
+
+  // paulirish.com/2011/requestanimationframe-for-smart-animating
+  win.requestAnimFrame = 
+    win.requestAnimationFrame       || 
+    win.webkitRequestAnimationFrame || 
+    win.mozRequestAnimationFrame    || 
+    win.oRequestAnimationFrame      || 
+    win.msRequestAnimationFrame     || 
+    function(callback) {
+      win.setTimeout(callback, 1000 / 60);
+    };
+
+  // developer.mozilla.org/en-US/docs/WebRTC/navigator.getUserMedia
   nav.getMedia = (nav.getUserMedia ||
                   nav.webkitGetUserMedia ||
                   nav.mozGetUserMedia ||
