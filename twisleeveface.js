@@ -182,53 +182,15 @@
   }
 
   function paintOnCanvas() {
-    var data, pixel, x, y, ctxHeight, ctxWidth,
-        ctxHalfWidth, widthX4, widthBound,
-        swp = [];
-
-    if (mode === 'photo') {
-      ctx.drawImage(camera,
-        parseInt((width - height) / 2, 10), 0, height, height, 0, 0, 73, 73);
-    } else {
-      ctx.drawImage(camera,
-        0, 0, width, parseInt(width / 2, 10), 0, 0, 520, 260);
-    }
-
-    // mirror
-    data = ctx.getImageData(0, 0, feedback.width, feedback.height);
-    pixel = data.data;
-
-    ctxHeight = feedback.height,
-    ctxWidth = feedback.width,
-    ctxHalfWidth = parseInt(ctxWidth / 2, 10),
-    widthX4 = ctxWidth * 4,
-    widthBound = ctxWidth - 1;
-
-    for (y = 0; y < ctxHeight; y += 1) {
-      for (x = 0; x < ctxHalfWidth; x += 1) {
-        swp[0] = pixel[(y * widthX4) + (x * 4)    ];
-        swp[1] = pixel[(y * widthX4) + (x * 4) + 1];
-        swp[2] = pixel[(y * widthX4) + (x * 4) + 2];
-        swp[3] = pixel[(y * widthX4) + (x * 4) + 3];
-
-        pixel[(y * widthX4) + (x * 4)    ] =
-          pixel[(y * widthX4) + ((widthBound - x) * 4)    ];
-        pixel[(y * widthX4) + (x * 4) + 1] =
-          pixel[(y * widthX4) + ((widthBound - x) * 4) + 1];
-        pixel[(y * widthX4) + (x * 4) + 2] =
-          pixel[(y * widthX4) + ((widthBound - x) * 4) + 2];
-        pixel[(y * widthX4) + (x * 4) + 3] =
-          pixel[(y * widthX4) + ((widthBound - x) * 4) + 3];
-
-        pixel[(y * widthX4) + ((widthBound - x) * 4)    ] = swp[0];
-        pixel[(y * widthX4) + ((widthBound - x) * 4) + 1] = swp[1];
-        pixel[(y * widthX4) + ((widthBound - x) * 4) + 2] = swp[2];
-        pixel[(y * widthX4) + ((widthBound - x) * 4) + 3] = swp[3];
+    if (width && height) {
+      if (mode === 'photo') {
+        ctx.drawImage(camera,
+          parseInt((width - height) / 2, 10), 0, height, height, 0, 0, 73, 73);
+      } else {
+        ctx.drawImage(camera,
+          0, 0, width, parseInt(width / 2, 10), 0, 0, 520, 260);
       }
     }
-
-    ctx.putImageData(data, 0, 0);
-
     win.requestAnimFrame(paintOnCanvas);
   }
 
