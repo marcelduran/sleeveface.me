@@ -253,7 +253,7 @@
   nav.getMedia = (nav.getUserMedia ||
                   nav.webkitGetUserMedia ||
                   nav.mozGetUserMedia ||
-                  nav.msGetUserMedia,
+                  nav.msGetUserMedia ||
                   function(a, b, c) {
                     c(new Error('getUserMedia not implemented'));
                   });
