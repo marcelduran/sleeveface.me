@@ -1,0 +1,7 @@
+{
+  "name": "sleeveface",
+  "version": "0.0.1",
+  "dependencies": {
+    "strata": "~0.20.1"
+  }
+}
